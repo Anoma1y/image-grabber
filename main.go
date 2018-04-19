@@ -6,35 +6,12 @@ import (
     "log"
     "net/http"
     "time"
-    // "io"
+    "io"
+    "os"
 )
 
 func main() {
     ExampleScrape()
-    // url := "http://i.imgur.com/m1UIjW1.jpg"
-    
-
-    // response, e := http.Get(url)
-
-    // if e != nil {
-    //     log.Fatal(e)
-    // }
-
-
-    // defer response.Body.Close()
-
-    // file, err := os.Create("/home/developer/Projects/qwerty.jpg")
-
-    // if err != nil {
-    //     log.Fatal(err)
-    // }
-
-    // _, err = io.Copy(file, response.Body)
-    // if err != nil {
-    //     log.Fatal(err)
-    // }
-    // file.Close()
-    // fmt.Println("Success!")
 }
 func ExampleScrape() {
     // Request the HTML page.
@@ -44,7 +21,7 @@ func ExampleScrape() {
       DisableCompression: true,
     }
     client := &http.Client{Transport: tr}
-    res, err := client.Get("https://lenta.ru/")
+    res, err := client.Get("https://lenta.ru/rubrics/world/")
     if err != nil {
       log.Fatal(err)
     }
@@ -60,10 +37,35 @@ func ExampleScrape() {
     }
     fmt.Printf("Start\n")
     // Find the review items
-    doc.Find(".js-main__sidebars .b-yellow-box__wrap .item").Each(func(i int, s *goquery.Selection) {
+    doc.Find(".article a.picture").Each(func(i int, s *goquery.Selection) {
       // For each item found, get the band and title
-      band := s.Find("a").Text()
-      fmt.Printf("Review %d: %s\n", i, band)
+      if val, ok := s.Find("img").Attr("src"); !ok {
+        fmt.Printf("Nope\n")
+      } else {
+
+        image := fmt.Sprintf("/home/developer/Projects/image%d.jpg", i)
+        response, e := http.Get(val)
+    
+        if e != nil {
+            log.Fatal(e)
+        }
+    
+    
+        defer response.Body.Close()
+
+        file, err := os.Create(image)
+
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        _, err = io.Copy(file, response.Body)
+        if err != nil {
+            log.Fatal(err)
+        }
+        file.Close()
+        fmt.Println("Success!")
+      }
     })
   }
   
