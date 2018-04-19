@@ -7,6 +7,7 @@ import (
     "net/http"
     "time"
     "io"
+    "strings"
     "os"
 )
 
@@ -43,17 +44,20 @@ func ExampleScrape() {
         fmt.Printf("Nope\n")
       } else {
 
-        image := fmt.Sprintf("/home/developer/Projects/image%d.jpg", i)
         response, e := http.Get(val)
     
         if e != nil {
             log.Fatal(e)
         }
     
-    
         defer response.Body.Close()
 
-        file, err := os.Create(image)
+        img := strings.Split(val, ".")
+        imgType := img[len(img) - 1]
+        imgName := strings.Split(img[2], "/")
+        url := fmt.Sprintf("/home/developer/Projects/%s.%s", imgName[len(imgName) - 1], imgType)
+
+        file, err := os.Create(url)
 
         if err != nil {
             log.Fatal(err)
@@ -64,7 +68,6 @@ func ExampleScrape() {
             log.Fatal(err)
         }
         file.Close()
-        fmt.Println("Success!")
       }
     })
   }
