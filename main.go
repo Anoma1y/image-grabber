@@ -17,22 +17,12 @@ func main() {
 
 func grabber(tag []string) {
 
-    var checkIsEmpty bool = true
-    page := 1
+    var (
+        checkIsEmpty bool = true
+        page int = 1
+    )
 
-    var tags string = ""
-
-    if len(tag) > 1 {
-        for i := 0; i < len(tag); i++  {
-            if i == 0 {
-                tags += tag[i]
-                continue
-            }
-            tags += "+" + tag[i]
-        }
-    } else {
-        tags += tag[0]
-    }
+    var tags = getTagsList(tag)
 
     for checkIsEmpty {
 
@@ -50,6 +40,7 @@ func grabber(tag []string) {
        }
 
        doc, err := goquery.NewDocumentFromReader(res.Body)
+
        if err != nil {
            log.Fatal(err)
        }
@@ -61,35 +52,61 @@ func grabber(tag []string) {
               if val, ok := s.Find("a.directlink").Attr("href"); !ok {
                   fmt.Printf("Nope\n")
               } else {
-                 inputImgName := strings.Split(val, "/")
-                 imgURL := inputImgName[len(inputImgName) - 1]
-                 sourceURL := fmt.Sprintf("D:/test/%s", imgURL)
-
-                 response, e := http.Get(val)
-
-                 if e != nil {
-                  log.Fatal(e)
-                 }
-
-                 defer response.Body.Close()
-
-                 file, err := os.Create(sourceURL)
-
-                 if err != nil {
-                  log.Fatal(err)
-                 }
-
-                 _, err = io.Copy(file, response.Body)
-                 if err != nil {
-                  log.Fatal(err)
-                 }
-
-                 file.Close()
+                  download(val)
               }
           })
        }
 
        page++
     }
+}
 
+func getImageName(value string) string {
+    inputImgName := strings.Split(value, "/")
+    imgURL := inputImgName[len(inputImgName) - 1]
+    return fmt.Sprintf("D:/test/%s", imgURL)
+}
+
+func getTagsList(tag []string) string {
+
+    var tags string = ""
+
+    if len(tag) > 1 {
+        for i := 0; i < len(tag); i++  {
+            if i == 0 {
+                tags += tag[i]
+                continue
+            }
+            tags += "+" + tag[i]
+        }
+    } else {
+        tags += tag[0]
+    }
+    return tags
+}
+
+func download(value string) {
+
+    var sourceURL string = getImageName(value)
+
+    response, e := http.Get(value)
+
+    if e != nil {
+        log.Fatal(e)
+    }
+
+    defer response.Body.Close()
+
+    file, err := os.Create(sourceURL)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    _, err = io.Copy(file, response.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    file.Close()
 }
