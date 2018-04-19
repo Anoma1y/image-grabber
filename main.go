@@ -89,39 +89,3 @@ func grabber(tag string) {
     }
 
 }
-
-
-func ExampleScrape() {
-
-
-
-    //doc.Find("#post-list-posts li").Each(func(i int, s *goquery.Selection) {
-    // if val, ok := s.Find("a.directlink").Attr("href"); !ok {
-    //   fmt.Printf("Nope\n")
-    // } else {
-    //     fmt.Printf("%d - %s\n", i, val)
-	//
-    //    response, e := http.Get(val)
-	//
-    //    if e != nil {
-    //       log.Fatal(e)
-    //    }
-	//
-    //    defer response.Body.Close()
-	//
-    //    file, err := os.Create(url)
-	//
-    //    if err != nil {
-    //       log.Fatal(err)
-    //    }
-	//
-    //    _, err = io.Copy(file, response.Body)
-    //    if err != nil {
-    //       log.Fatal(err)
-    //    }
-    //    fmt.Println("Success")
-    //    file.Close()
-    //  }
-    //})
-  }
-  
