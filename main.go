@@ -5,6 +5,7 @@ import (
     "github.com/PuerkitoBio/goquery"
     "log"
     "net/http"
+    "time"
     // "io"
 )
 
@@ -37,7 +38,13 @@ func main() {
 }
 func ExampleScrape() {
     // Request the HTML page.
-    res, err := http.Get("http://metalsucks.net")
+    tr := &http.Transport{
+      MaxIdleConns:       10,
+      IdleConnTimeout:    30 * time.Second,
+      DisableCompression: true,
+    }
+    client := &http.Client{Transport: tr}
+    res, err := client.Get("https://lenta.ru/")
     if err != nil {
       log.Fatal(err)
     }
@@ -51,13 +58,12 @@ func ExampleScrape() {
     if err != nil {
       log.Fatal(err)
     }
-  
+    fmt.Printf("Start\n")
     // Find the review items
-    doc.Find(".sidebar-reviews article .content-block").Each(func(i int, s *goquery.Selection) {
+    doc.Find(".js-main__sidebars .b-yellow-box__wrap .item").Each(func(i int, s *goquery.Selection) {
       // For each item found, get the band and title
       band := s.Find("a").Text()
-      title := s.Find("i").Text()
-      fmt.Printf("Review %d: %s - %s\n", i, band, title)
+      fmt.Printf("Review %d: %s\n", i, band)
     })
   }
   
