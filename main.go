@@ -13,7 +13,6 @@ import (
 
 func main() {
     var tag string = "sousouman"
-    go grabber(tag)
     grabber(tag)
 }
 
